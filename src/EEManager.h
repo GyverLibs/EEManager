@@ -13,6 +13,7 @@
 
     Версии:
     v1.0 - релиз
+    v1.1 - изменены коды возврата begin
 */
 
 #ifndef _EEManager_h
@@ -37,15 +38,15 @@ public:
     // начать работу, прочитать данные в переменную. Принимает адрес начала хранения даты и ключ
     uint8_t begin(uint8_t addr, uint8_t key) {        
         _addr = addr;
-        if (_addr + _size + 1 > EEPROM.length()) return 0;  // не хватит места
+        if (_addr + _size + 1 > EEPROM.length()) return 2;  // не хватит места
         _ready = 1;
         if (EEPROM.read(_addr + _size) != key) {            // ключ не совпал
             EEPROM.write(_addr + _size, key);               // пишем ключ
             updateNow();                                    // пишем стандартные значения
-            return 2;
+            return 1;
         }
         for (uint16_t i = 0; i < _size; i++) _data[i] = EEPROM.read(_addr + i);
-        return 1;
+        return 0;
     }
     
     // обновить данные в еепром сейчас

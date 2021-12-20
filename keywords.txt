@@ -21,6 +21,7 @@ dataSize	KEYWORD2
 blockSize	KEYWORD2
 startAddr	KEYWORD2
 endAddr	KEYWORD2
+nextAddr	KEYWORD2
 
 
 #######################################

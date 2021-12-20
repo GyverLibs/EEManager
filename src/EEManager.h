@@ -14,6 +14,7 @@
     Версии:
     v1.0 - релиз
     v1.1 - изменены коды возврата begin
+    v1.2 - добавлена nextAddr()
 */
 
 #ifndef _EEManager_h
@@ -99,6 +100,11 @@ public:
     // получить адрес последнего байта в блоке (включая ключ)
     uint16_t endAddr() {
         return _addr + _size;
+    }
+    
+    // получить первый свободный адрес для следующего блока
+    uint16_t nextAddr() {
+        return _addr + _size + 1;
     }
 
 private:

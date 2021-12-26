@@ -52,13 +52,9 @@ public:
     
     // обновить данные в еепром сейчас
     void updateNow() {
-        if (_ready) {            
-#ifdef ESP8266
+        if (_ready) {
             for (uint16_t i = 0; i < _size; i++) EEPROM.write(_addr + i, _data[i]);
             EEPROM.commit();
-#else
-            for (uint16_t i = 0; i < _size; i++) EEPROM.update(_addr + i, _data[i]);
-#endif
         }
     }
     

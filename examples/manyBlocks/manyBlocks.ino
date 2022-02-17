@@ -15,6 +15,7 @@ EEManager mem2(arr);
 void setup() {
   Serial.begin(9600);
   // для esp8266 не забудь вызвать EEPROM.begin(размер)!
+  // EEPROM.begin(mem1.blockSize() + mem2.blockSize());
 
   // первый блок храним с адреса 0
   mem1.begin(0, 'a');

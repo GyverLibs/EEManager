@@ -15,6 +15,7 @@
     v1.0 - релиз
     v1.1 - изменены коды возврата begin
     v1.2 - добавлена nextAddr()
+    v1.2.1 - поддержка esp32
 */
 
 #ifndef _EEManager_h
@@ -53,7 +54,7 @@ public:
     // обновить данные в еепром сейчас
     void updateNow() {
         if (_ready) {            
-#ifdef ESP8266
+#if defined(ESP8266) || defined(ESP32)
             for (uint16_t i = 0; i < _size; i++) EEPROM.write(_addr + i, _data[i]);
             EEPROM.commit();
 #else

@@ -134,7 +134,7 @@ void loop() {
 
 <a id="versions"></a>
 ## Versions
--v1.0
+- v1.0
 - v1.1 - begin return codes changed
 - v1.2 - added nextAddr()
 - v1.2.1 - esp32 support

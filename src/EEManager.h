@@ -16,6 +16,7 @@
     v1.1 - изменены коды возврата begin
     v1.2 - добавлена nextAddr()
     v1.2.1 - поддержка esp32
+    v1.2.2 - пофиксил варнинг
 */
 
 #ifndef _EEManager_h
@@ -40,7 +41,7 @@ public:
     // начать работу, прочитать данные в переменную. Принимает адрес начала хранения даты и ключ
     uint8_t begin(uint8_t addr, uint8_t key) {        
         _addr = addr;
-        if (_addr + _size + 1 > EEPROM.length()) return 2;  // не хватит места
+        if (_addr + _size + 1 > (uint16_t)EEPROM.length()) return 2;  // не хватит места
         _ready = 1;
         if (EEPROM.read(_addr + _size) != key) {            // ключ не совпал
             EEPROM.write(_addr + _size, key);               // пишем ключ

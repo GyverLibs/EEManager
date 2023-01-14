@@ -23,6 +23,8 @@ startAddr	KEYWORD2
 endAddr	KEYWORD2
 nextAddr	KEYWORD2
 
+EEBlock	KEYWORD2
+
 
 #######################################
 # Constants (LITERAL1)

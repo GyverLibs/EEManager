@@ -17,6 +17,7 @@
     v1.2 - добавлена nextAddr()
     v1.2.1 - поддержка esp32
     v1.2.2 - пофиксил варнинг
+    v1.3 - исправлен критический баг с адресацией, добавлен макрос EEBlock
 */
 
 #ifndef _EEManager_h
@@ -24,11 +25,13 @@
 #include <Arduino.h>
 #include <EEPROM.h>
 
+#define EEBlock(x) (sizeof(x) + 1)
+
 class EEManager {
 public:
     // передать данные любого типа, опционально таймаут обновления в мс
     template <typename T> EEManager(T &data, uint16_t tout = 5000) {
-        _data = (uint8_t*) &data;
+        _data = (uint8_t*)&data;
         _size = sizeof(T);
         _tout = tout;
     }
@@ -39,7 +42,7 @@ public:
     }
     
     // начать работу, прочитать данные в переменную. Принимает адрес начала хранения даты и ключ
-    uint8_t begin(uint8_t addr, uint8_t key) {        
+    uint8_t begin(uint16_t addr, uint8_t key) {        
         _addr = addr;
         if (_addr + _size + 1 > (uint16_t)EEPROM.length()) return 2;  // не хватит места
         _ready = 1;

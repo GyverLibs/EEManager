@@ -19,6 +19,7 @@
     v1.2.2 - пофиксил варнинг
     v1.3 - исправлен критический баг с адресацией, добавлен макрос EEBlock
     v1.4 - ещё больше поддержки esp8266/32
+    v2.0 - ключ запуска перенесён в начало блока для удобства. Обновление библиотеки сбросит данные в EEPROM!
 */
 
 #ifndef _EEManager_h
@@ -44,12 +45,12 @@ public:
     
     // начать работу, прочитать данные в переменную. Принимает адрес начала хранения даты и ключ
     uint8_t begin(uint16_t addr, uint8_t key) {        
-        _addr = addr;
-        if (_addr + _size + 1 > (uint16_t)EEPROM.length()) return 2;  // не хватит места
-        _ready = 1;
-        if (EEPROM.read(_addr + _size) != key) {            // ключ не совпал
-            EEPROM.write(_addr + _size, key);               // пишем ключ
-            updateNow();                                    // пишем стандартные значения
+        _addr = addr + 1;                                       // данные начнутся со следующего адреса
+        if (nextAddr() > (uint16_t)EEPROM.length()) return 2;   // не хватит места
+        _ready = 1;                                             // EEPROM запущен и размера хватит
+        if (EEPROM.read(keyAddr()) != key) {                    // ключ не совпал
+            EEPROM.write(keyAddr(), key);                       // пишем ключ
+            updateNow();                                        // пишем стандартные значения
             return 1;
         }
         for (uint16_t i = 0; i < _size; i++) _data[i] = EEPROM.read(_addr + i);
@@ -85,7 +86,7 @@ public:
     
     // сбросить ключ запуска. При перезагрузке (или вызове begin) запишутся стандартные данные 
     void reset() {
-        EEPROM.write(_addr + _size, EEPROM.read(_addr + _size) + 1);   // меняем ключ на +1, при перезапуске будет дефолт
+        EEPROM.write(keyAddr(), EEPROM.read(keyAddr()) + 1);   // меняем ключ на +1, при перезапуске будет дефолт
         #if defined(ESP8266) || defined(ESP32)
         EEPROM.commit();
         #endif
@@ -101,19 +102,24 @@ public:
         return _size + 1;
     }
     
-    // получить адрес первого байта в блоке
+    // получить адрес ключа
+    uint16_t keyAddr() {
+        return _addr - 1;
+    }
+    
+    // получить адрес первого байта данных в блоке
     uint16_t startAddr() {
         return _addr;
     }
     
-    // получить адрес последнего байта в блоке (включая ключ)
+    // получить адрес последнего байта в блоке
     uint16_t endAddr() {
-        return _addr + _size;
+        return _addr + _size - 1;
     }
     
     // получить первый свободный адрес для следующего блока
     uint16_t nextAddr() {
-        return _addr + _size + 1;
+        return _addr + _size;
     }
 
 private:

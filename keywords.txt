@@ -22,6 +22,7 @@ blockSize	KEYWORD2
 startAddr	KEYWORD2
 endAddr	KEYWORD2
 nextAddr	KEYWORD2
+keyAddr	KEYWORD2
 
 EEBlock	KEYWORD2
 

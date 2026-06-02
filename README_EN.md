@@ -1,188 +1,200 @@
-This is an automatic translation, may be incorrect in some places. See sources and examples!
+This is an automatic translation and may be incorrect in some places. See the source README and examples for authoritative information.
 
-# Eemanager
-Eeprom manager - Library to reduce memory wear
-- postponed entry (update) by timer
-- works on the basis of standard eeprom.h
-- Built -in mechanism of the first record key
+[![latest](https://img.shields.io/github/v/release/GyverLibs/EEManager.svg?color=brightgreen)](https://github.com/GyverLibs/EEManager/releases/latest/download/EEManager.zip)
+[![PIO](https://badges.registry.platformio.org/packages/gyverlibs/library/EEManager.svg)](https://registry.platformio.org/libraries/gyverlibs/EEManager)
+[![Foo](https://img.shields.io/badge/Website-AlexGyver.ru-blue.svg?style=flat-square)](https://alexgyver.ru/)
+[![Foo](https://img.shields.io/badge/%E2%82%BD%24%E2%82%AC%20%D0%9F%D0%BE%D0%B4%D0%B4%D0%B5%D1%80%D0%B6%D0%B0%D1%82%D1%8C-%D0%B0%D0%B2%D1%82%D0%BE%D1%80%D0%B0-orange.svg?style=flat-square)](https://alexgyver.ru/support_alex/)
+[![Foo](https://img.shields.io/badge/README-ENGLISH-blueviolet.svg?style=flat-square)](https://github-com.translate.goog/GyverLibs/EEManager?_x_tr_sl=ru&_x_tr_tl=en)  
 
-## compatibility
-Compatible with all arduino platforms (used arduino functions)
-- For ESP8266, do not forget to call EEPROM.BEGIN (size)!
+[![Foo](https://img.shields.io/badge/ПОДПИСАТЬСЯ-НА%20ОБНОВЛЕНИЯ-brightgreen.svg?style=social&logo=telegram&color=blue)](https://t.me/GyverLibs)
 
-## Content
-- [installation] (# Install)
-- [initialization] (#init)
-- [use] (#usage)
-- [Example] (# Example)
-- [versions] (#varsions)
-- [bugs and feedback] (#fedback)
+# EEManager
+EEPROM Manager - a library to reduce memory wear
+- Postponed recording (update) by timer
+- It works on the basis of standard EEPROM. h h
+- Built-in mechanism of the first record key
 
-<a id="install"> </a>
-## Installation
-- The library can be found by the name ** eemanager ** and installed through the library manager in:
-    - Arduino ide
-    - Arduino ide v2
-    - Platformio
-- [download the library] (https://github.com/gyverlibs/eemanager/archive/refs/heads/main.zip) .Zip archive for manual installation:
-    - unpack and put in * C: \ Program Files (X86) \ Arduino \ Libraries * (Windows X64)
-    - unpack and put in * C: \ Program Files \ Arduino \ Libraries * (Windows X32)
-    - unpack and put in *documents/arduino/libraries/ *
-    - (Arduino id) Automatic installation from. Zip: * sketch/connect the library/add .Zip library ... * and specify downloaded archive
-- Read more detailed instructions for installing libraries [here] (https://alexgyver.ru/arduino-first/#%D0%A3%D1%81%D1%82%D0%B0%BD%D0%BE%BE%BE%BED0%B2%D0%BA%D0%B0_%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA)
-### Update
-- I recommend always updating the library: errors and bugs are corrected in the new versions, as well as optimization and new features are added
-- through the IDE library manager: find the library how to install and click "update"
-- Manually: ** remove the folder with the old version **, and then put a new one in its place.“Replacement” cannot be done: sometimes in new versions, files that remain when replacing are deleted and can lead to errors!
+> For esp8266 and esp32 it is much better to store data in the file system, use the library.[FileData](https://github.com/GyverLibs/FileData)(binary data in the file) or[Pairs](https://github.com/GyverLibs/Pairs)(human-readable files)
 
+### Compatibility
+Compatible with all Arduino platforms (Arduino features are used)
+- For esp8266, remember to call EEPROM.begin(size)!
 
-<a id="init"> </a>
-## initialization
-`` `CPP
-// We transfer our variable of any type (in fact its address) - structure, array, anything
-Eemanager Memory (Data);
+## Contents
+- [Initialization](#init)
+- [Use of use](#usage)
+- [Example](#example)
+- [Versions](#versions)
+- [Installation](#install)
+- [Bugs and feedback](#feedback)
 
-// You can set the update timout, by the silence.5 seconds (5000ms)
-Eemanager Memory (Data, 1000);
-`` `
+<a id="init"></a>
 
-<a id="usage"> </a>
-## Documentation
-`` `CPP
-// Start work, read data in a variable.
-// accepts the address of the start of storage of the date and key
-// returns:
-// 0 - the key coincided, the data is read from EPROM
-// 1 - the key did not coincide (the first launch), the data are recorded in EPROM
-// 2 - error, there is not enough space in Eprom
-Uint8_t Begin (Uint16_T Addr, Uint8_t Key);
+## Initialization
+```cpp
+EEManager(T& data, uint16_t tout = 5000);
+EEManager(void* data, uint16_t size, uint16_t tout = 5000);
+```
 
-VOID settimeout (uint16_t tout = 5000);// change the timaut
-VOID updatenow ();// update data to her industry now
-VOID update ();// postpone the update and reset the timer
-Bool Tick ();// Tiker of updates
-VOID Reset ();// Reset the launch key.When rebooting (or calls is the Begin), standard data will be recorded
+<a id="usage"></a>
 
-uint16_t datasize ();// get data size
-Uint16_T BLOCKSIZE ();// Get the size of the entire block (data + key)
+## Documentation.
+```cpp
+// Start working, read the data into a variable.
+// Accepts date start address and key
+// Returns:
+// 0 - the key matched, the data read from Eprom
+// 1 - the key did not match (first run), the data is recorded in eprom
+// 2 - a mistake, there is not enough space in the eprom
+uint8_t begin(uint16_t addr, uint8_t key);
 
-uint16_t keyaddr ();// get the key address (coincides with the transferred to Begin ())
-uint16_t Startaddr ();// get the address of the first byte of data in the block (equal to address in Begin () + 1)
-Uint16_T Endaddr ();// get the address of the last byte in the block
-uint16_t nEXTADDDR ();// Get the first free address for the next block
-`` `
+void setTimeout(uint16_t tout = 5000);      // timeout
+void updateNow();       // Update the data in her industry now
+void update();          // postpone the update and reset the timer
+void stop();            // cancel the delayed update
+bool tick();            // ticker
+void reset();           // reset the launch key. When restarting (or calling start), standard data will be written.
+
+uint16_t dataSize();    // size
+uint16_t blockSize();   // Get the size of the entire block (data + key)
+
+uint16_t keyAddr();     // receive the address of the key (coincides with the transferred to start())
+uint16_t startAddr();   // get the address of the first data byte in the block (equal to the address in start() + 1)
+uint16_t endAddr();     // Get the address of the last byte in the block
+uint16_t nextAddr();    // Get the first free address for the next block
+```
 
 General functions/macros
-`` `CPP
-EEBLOCK (DATA);// returns the size of the specified data Data (any type) +1 to the key (for calculating the addresses of the blocks in memory)
-`` `
+```cpp
+EEBlock(data);          // returns the size of the specified data (any type) +1 to the key (to calculate the addresses of blocks in memory)
+```
 
-### Usage
-1. declare a variable in which data is stored (integer, array, structure ...)
-2. Pass it to Eemanager: `Eemanager Memory (Data);`
-2.1 * [only for ESP] * Launch EEPROM indicating the size: `eeprom.begin (size);`.If only the specified data is stored, you can do it: `eeprom.begin (memory.blocksize ());`
-3. Run the manager `Memory.Begin (address, key);`
-- Address - starting from this address, the block will be stored in memory (first the key, then data)
-- Key - the "first entry" tag type `byte` (you can use the symbol).If you change the key, the data will be rewritten from the variable, i.e.They will drop to default
-4. Call `memory.tick ()` inside `loop ()`
-5 and
-6. The “first record” key is stored at the very beginning of the block (at the address indicated in the address), therefore, when the amount of the recorded data changes, it will not suffer
+### Use of use
+1. Declare the variable in which the data is stored (integer, array, structure...)
+2. Send it to EEManager:`EEManager memory(data);`  
+2.1 *[For ESP only]* Start EEPROM with the size:`EEPROM.begin(размер);`. If only these data will be stored, you can do this:`EEPROM.begin(memory.blockSize());`
+3. Run the manager.`memory.begin(адрес, ключ);`
+- Address – starting from this address, the block will be stored in memory (key first, then data)
+- The key is a "first entry" type label.`byte`(Symbols may be used). If you change the key, the data will be overwritten from the variable, i.e. reset to silence.
+4. Call in`memory.tick()`inside`loop()`
+5. After changing the data, call`memory.update()`EEPROM data will be updated automatically after a timeout within the function`tick()`
+6. The key of the "first record" is stored at the very beginning of the block (at the address specified in the start() address), so if you change the size of the recorded data will not suffer.
 
-The library allows you to postpone the data recording on a given timout, so when setting up the devices settings (buttons/twists), you can safely call update () after each change, since the data will be recorded after the timut after the change is stopped.
+The library allows you to postpone the recording of data for a given timeout, so when setting the device parameters (buttons / twisters), you can safely call update() after each change, since the data will be written after a timeout after the changes stop.
 
-<a id="EXAMPLE"> </a>
+<a id="example"></a>
+
 ## Example
-`` `CPP
-// Data storage structure
-Struct Data {
-  Char Val = 'H';
-  Chard [15] = "Ello Kitty!";
+```cpp
+// storage
+struct Data {
+  char val = 'H';
+  char str[15] = "ello kitty!";
 };
-Data Data;// variable with which we work in the program
+Data data;  // The variable we work with in the program
 
-#include <eemanager.h> // Connect Liba
-Eemanager Memory (Data);// We transmit our variable (in fact its address)
+#include <EEManager.h>  // plug-in
+EEManager memory(data); // Transmit our variable (actually its address)
 
-// You can set the update timout, by the silence.5 seconds (5000ms)
-// Eemanager Memory (Data, 1000);
+// You can set a timeout update, silently. 5 seconds (5000ms)
+//EEManager memory(data, 1000);
 
-VOID setup () {
-  Serial.Begin (9600);
-  // For ESP8266 Do not forget to call eEPROM.BEGIN (size)!
+void setup() {
+  Serial.begin(9600);
+  // For esp8266, remember to call EEPROM.begin(size)!
   /*
-    We launch the manager, transmit:
-    - starting address in memory for recording date
-    - storage key (0 .. 255) or symbol
+    Запускаем менеджер, передаём:
+    - Стартовый адрес в памяти для записи даты
+    - Ключ хранения (0.. 255) или символ
   */
-  byte stat = memory.begin (0, 'b');
+  byte stat = memory.begin(0, 'b');
 
   /*
-    Return codes:
-    0 - the key coincided, the data is read from EPROM
-    1 - the key did not coincide (the first launch), the data is recorded in EPROM
-    2 - error, in Eprom there is not enough space
+    Коды возврата:
+    0 - ключ совпал, данные прочитаны из епром
+    1 - ключ не совпал (первый запуск), данные записаны в епром
+    2 - ошибка, в епроме не хватает места
   */
-  Serial.println (stat);
+  Serial.println(stat);
 
-  // Determine the entire contents of the memory unit, including the key
-  for (uint16_t I = Memory.startaddr (); i <memory.ndadddr ()+1; i ++)
-    Serial.write (eeprom.read (i));
-  Serial.println ();
+  // port all the contents of the memory block, including the key
+  for (uint16_t i = memory.startAddr(); i < memory.endAddr() + 1; i++)
+    Serial.write(EEPROM.read(i));
+  Serial.println();
   
-  Data.val = 'X';// Change data in the variable
-  Memory.update ();// postpone the update
+  data.val = 'X';     // change the data in the variable
+  memory.update();    // postpone the update
 
-  // Note: if you need to create another block next in memory -
-  // Launch it at the address Memory.ndadddr () + 1, this is the first
-  // Free byte after the first block
+  // Note: if you want to create another block next in memory,
+  // Run it at memory.endAddr() + 1, this is the first
+  // free byte after the first block
 }
 
-VOID loop () {
-  // In a lup we call tick (), in it the timer will update
-  // The function will return True when it happens
-  if (memory.tick ()) serial.println ("updated!");
+void loop() {
+  // in the magnifier call tick(), it will update the timer
+  // The function will return true when it happens.
+  if (memory.tick()) Serial.println("Updated!");
 
-  // Determine the entire contents of the memory unit, including the key
-  for (uint16_t I = Memory.startaddr (); i <memory.ndadddr ()+1; i ++)
-    Serial.write (eeprom.read (i));
-  Serial.println ();
+  // port all the contents of the memory block, including the key
+  for (uint16_t i = memory.startAddr(); i < memory.endAddr() + 1; i++)
+    Serial.write(EEPROM.read(i));
+  Serial.println();
 
-  // Timer of reset for 10 seconds: after 10 seconds
-  // Data key will be discharged, and at the next launch
-  // In the EPROM, the default data will be recorded (what is in the structure of the structure)
-  Static uint32_t tmr;
-  if (millis () - tmr> = 10000) {
-    Memory.Reset ();
-    Serial.println ("reset");
+  // Reset timer for 10 seconds: after 10 seconds
+  // The data key will be reset, and at the next launch
+  // In Eprom, the data will be recorded by default (what is in the structure shortcut)
+  static uint32_t tmr;
+  if (millis() - tmr >= 10000) {
+    memory.reset();
+    Serial.println("reset");
     for (;;);
   }
   
-  DELAY (1000);// Chilim
+  delay(1000);    // chilim
 }
-`` `
+```
 
-<a id="versions"> </a>
-## versions
-- V1.0
-- V1.1 - Code of Return Begin
-- v1.2 - added Nextadddr ()
-- V1.2.1 - ESP32 support
-- v1.2.2 - fixed Varning
-- V1.3 - A critical bug with addressing was fixed, EEBLOCK macro has been added
-- V1.4 - even more support ESP8266/32
-- V2.0 - the launch key is transferred to the beginning of the block for convenience.The library update will drop data in Eeprom!
+<a id="versions"></a>
 
-<a id="feedback"> </a>
-## bugs and feedback
-When the bugs are created** Issue **, or better immediately write to the mail [alex@alexgyver.ru] (mailto: alex@alexgyver.ru)
-The library is open for refinement and your ** pull Request ** 'ow!
+## Versions
+- v1.0
+- v1.1 - Changed start return codes
+- v1.2 - added nextAddr()
+- v1.2.1. support for esp32
+- v1.2.2 - Fixed warning
+- v1.3 - Fixed critical addressing bug, added macro EEBlock
+- v1.4 - more support for esp8266/32
+- v2.0 - The start key is moved to the beginning of the block for convenience. The library update will reset data to EEPROM!
 
+<a id="install"></a>
 
-When reporting about bugs or incorrect work of the library, it is necessary to indicate:
-- The version of the library
-- What is MK used
+## Installation
+- The library can be found under the name **EEManager** and installed through the library manager in:
+    - Arduino IDE
+    - Arduino IDE v2
+    - PlatformIO
+- [Download the library](https://github.com/GyverLibs/EEManager/archive/refs/heads/main.zip).zip archive for manual installation:
+    - Unpack and put in *C:\Program Files (x86)\Arduino\libraries* (Windows x64)
+    - Unpack and put in *C:\Program Files\Arduino\libraries* (Windows x32)
+    - Unpack and put in *Documents/Arduino/libraries/ *
+    - (Arduino IDE) Automatic installation from .zip: *Sketch/Connect library/Add .ZIP library...* and specify downloaded archive
+- Read more detailed instructions for installing libraries[here](https://alexgyver.ru/arduino-first/#%D0%A3%D1%81%D1%82%D0%B0%D0%BD%D0%BE%D0%B2%D0%BA%D0%B0_%D0%B1%D0%B8%D0%B1%D0%BB%D0%B8%D0%BE%D1%82%D0%B5%D0%BA)
+### Update
+- I recommend always updating the library: new versions fix errors and bugs, as well as optimize and add new features.
+- Through the library manager IDE: find the library as when installing and click "Update"
+- Manually: **Delete the folder with the old version** and then put the new one in its place. “Replacement” can not be done: sometimes new versions delete files that will remain when replaced and can lead to errors!
+
+<a id="feedback"></a>
+
+## Bugs and feedback
+If you find bugs, create **Issue**, or better write to the mail immediately.[alex@alexgyver.ru](mailto:alex@alexgyver.ru)  
+The library is open for revision and your **Pull Requests*!
+
+When reporting bugs or incorrect work of the library, it is necessary to specify:
+- Library version
+- What is used by the IC
 - SDK version (for ESP)
-- version of Arduino ide
-- whether the built -in examples work correctly, in which the functions and designs are used, leading to a bug in your code
-- what code has been loaded, what work was expected from it and how it works in reality
-- Ideally, attach the minimum code in which the bug is observed.Not a canvas of a thousand lines, but a minimum code
+- Arduino IDE version
+- Are embedded examples that use features and designs that cause bugs in your code working correctly?
+- What code was downloaded, what work was expected from it and how it works in reality
+- Ideally, attach the minimum code in which the bug is observed. Not a canvas of a thousand lines, but a minimum code.

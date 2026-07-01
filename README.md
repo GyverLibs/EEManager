@@ -41,13 +41,13 @@ EEManager(void* data, uint16_t size, uint16_t tout = 5000);
 // Начать работу, прочитать данные в переменную. 
 // Принимает адрес начала хранения даты и ключ
 // Возвращает:
-// 0 - ключ совпал, данные прочитаны из епром
-// 1 - ключ не совпал (первый запуск), данные записаны в епром
-// 2 - ошибка, в епроме не хватает места
-uint8_t begin(uint16_t addr, uint8_t key);
+// EEManager::OK - ключ совпал, данные прочитаны из EEPROM
+// EEManager::FIRST_RUN - ключ не совпал, стандартные данные записаны в EEPROM
+// EEManager::NO_SPACE - в EEPROM не хватает места
+EEManager::Status begin(uint16_t addr, uint8_t key);
 
 void setTimeout(uint16_t tout = 5000);      // сменить таймаут
-void updateNow();       // обновить данные в еепром сейчас
+void updateNow();       // обновить данные сейчас и отменить отложенное обновление
 void update();          // отложить обновление и сбросить таймер
 void stop();            // отменить отложенное обновление
 bool tick();            // тикер обновления
@@ -105,15 +105,15 @@ void setup() {
     - Стартовый адрес в памяти для записи даты
     - Ключ хранения (0.. 255) или символ
   */
-  byte stat = memory.begin(0, 'b');
+  EEManager::Status status = memory.begin(0, 'b');
 
   /*
     Коды возврата:
-    0 - ключ совпал, данные прочитаны из епром
-    1 - ключ не совпал (первый запуск), данные записаны в епром
-    2 - ошибка, в епроме не хватает места
+    EEManager::OK - данные прочитаны из EEPROM
+    EEManager::FIRST_RUN - стандартные данные записаны в EEPROM
+    EEManager::NO_SPACE - в EEPROM не хватает места
   */
-  Serial.println(stat);
+  Serial.println(status);
 
   // выведем в порт всё содержимое блока памяти, включая ключ
   for (uint16_t i = memory.startAddr(); i < memory.endAddr() + 1; i++)

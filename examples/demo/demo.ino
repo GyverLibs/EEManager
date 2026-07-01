@@ -20,15 +20,15 @@ void setup() {
     - Стартовый адрес в памяти для записи даты
     - Ключ хранения (0.. 255) или символ
   */
-  byte stat = memory.begin(0, 'b');
+  EEManager::Status status = memory.begin(0, 'b');
 
   /*
     Коды возврата:
-    0 - ключ совпал, данные прочитаны из епром
-    1 - ключ не совпал (первый запуск), данные записаны в епром
-    2 - ошибка, в епроме не хватает места
+    EEManager::OK - данные прочитаны из EEPROM
+    EEManager::FIRST_RUN - стандартные данные записаны в EEPROM
+    EEManager::NO_SPACE - в EEPROM не хватает места
   */
-  Serial.println(stat);
+  Serial.println(status);
 
   // выведем в порт всё содержимое блока памяти, включая ключ
   for (uint16_t i = memory.startAddr(); i < memory.endAddr() + 1; i++)

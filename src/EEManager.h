@@ -31,6 +31,12 @@
 
 class EEManager {
    public:
+    enum Status : uint8_t {
+        OK,
+        FIRST_RUN,
+        NO_SPACE,
+    };
+
     // передать данные любого типа, опционально таймаут обновления в мс
     template <typename T>
     EEManager(T& data, uint16_t tout = 5000) {
@@ -52,21 +58,26 @@ class EEManager {
     }
 
     // начать работу, прочитать данные в переменную. Принимает адрес начала хранения даты и ключ
-    uint8_t begin(uint16_t addr, uint8_t key) {
-        _addr = addr + 1;                                      // данные начнутся со следующего адреса
-        if (nextAddr() > (uint16_t)EEPROM.length()) return 2;  // не хватит места
-        _ready = 1;                                            // EEPROM запущен и размера хватит
+    Status begin(uint16_t addr, uint8_t key) {
+        _ready = false;
+        _update = false;
+        uint32_t next = (uint32_t)addr + 1 + _size;
+        if (next > (uint32_t)EEPROM.length() || next > UINT16_MAX) return NO_SPACE;
+
+        _addr = addr + 1;  // данные начнутся со следующего адреса
+        _ready = true;                                         // EEPROM запущен и размера хватит
         if (EEPROM.read(keyAddr()) != key) {                   // ключ не совпал
             EEPROM.write(keyAddr(), key);                      // пишем ключ
             updateNow();                                       // пишем стандартные значения
-            return 1;
+            return FIRST_RUN;
         }
         for (uint16_t i = 0; i < _size; i++) _data[i] = EEPROM.read(_addr + i);
-        return 0;
+        return OK;
     }
 
     // обновить данные в еепром сейчас
     void updateNow() {
+        _update = false;
         if (_ready) {
 #if defined(ESP8266) || defined(ESP32)
             for (uint16_t i = 0; i < _size; i++) EEPROM.write(_addr + i, _data[i]);
@@ -79,27 +90,29 @@ class EEManager {
 
     // отложить обновление и сбросить таймер
     void update() {
-        _tmr = millis();
-        _update = 1;
+        if (_ready) {
+            _tmr = millis();
+            _update = true;
+        }
     }
 
     // отменить отложенное обновление
     void stop() {
-        _update = 0;
+        _update = false;
     }
 
     // тикер обновления
     bool tick() {
-        if (_update && (uint16_t)((uint16_t)millis() - _tmr) >= _tout) {
+        if (_ready && _update && (uint16_t)((uint16_t)millis() - _tmr) >= _tout) {
             updateNow();
-            _update = 0;
-            return 1;
+            return true;
         }
-        return 0;
+        return false;
     }
 
     // сбросить ключ запуска. При перезагрузке (или вызове begin) запишутся стандартные данные
     void reset() {
+        if (!_ready) return;
         EEPROM.write(keyAddr(), EEPROM.read(keyAddr()) + 1);  // меняем ключ на +1, при перезапуске будет дефолт
 #if defined(ESP8266) || defined(ESP32)
         EEPROM.commit();
@@ -138,10 +151,10 @@ class EEManager {
 
    private:
     uint8_t* _data;
-    uint16_t _size, _addr;
-    bool _ready = 0, _update = 0;
+    uint16_t _size, _addr = 0;
     uint16_t _tmr = 0;
     uint16_t _tout;
+    bool _ready = false, _update = false;
 };
 
 #endif

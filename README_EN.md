@@ -43,13 +43,13 @@ EEManager(void* data, uint16_t size, uint16_t tout = 5000);
 // Start working, read the data into a variable.
 // Accepts date start address and key
 // Returns:
-// 0 - the key matched, the data read from Eprom
-// 1 - the key did not match (first run), the data is recorded in eprom
-// 2 - a mistake, there is not enough space in the eprom
-uint8_t begin(uint16_t addr, uint8_t key);
+// EEManager::OK - the key matched and data was read from EEPROM
+// EEManager::FIRST_RUN - the key did not match and defaults were stored
+// EEManager::NO_SPACE - there is not enough EEPROM space
+EEManager::Status begin(uint16_t addr, uint8_t key);
 
 void setTimeout(uint16_t tout = 5000);      // timeout
-void updateNow();       // Update the data in her industry now
+void updateNow();       // update data now and cancel the delayed update
 void update();          // postpone the update and reset the timer
 void stop();            // cancel the delayed update
 bool tick();            // ticker
@@ -107,15 +107,15 @@ void setup() {
     - Стартовый адрес в памяти для записи даты
     - Ключ хранения (0.. 255) или символ
   */
-  byte stat = memory.begin(0, 'b');
+  EEManager::Status status = memory.begin(0, 'b');
 
   /*
     Коды возврата:
-    0 - ключ совпал, данные прочитаны из епром
-    1 - ключ не совпал (первый запуск), данные записаны в епром
-    2 - ошибка, в епроме не хватает места
+    EEManager::OK - data was read from EEPROM
+    EEManager::FIRST_RUN - defaults were stored in EEPROM
+    EEManager::NO_SPACE - there is not enough EEPROM space
   */
-  Serial.println(stat);
+  Serial.println(status);
 
   // port all the contents of the memory block, including the key
   for (uint16_t i = memory.startAddr(); i < memory.endAddr() + 1; i++)

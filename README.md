@@ -6,13 +6,16 @@
 
 [![Foo](https://img.shields.io/badge/ПОДПИСАТЬСЯ-НА%20ОБНОВЛЕНИЯ-brightgreen.svg?style=social&logo=telegram&color=blue)](https://t.me/GyverLibs)
 
+|⚠️⚠️⚠️<br>**Библиотека архивирована! Используйте [Saver](https://github.com/GyverLibs/Saver) - более новый и надёжный вариант**<br>⚠️⚠️⚠️|
+| --- |
+
 # EEManager
 Менеджер EEPROM - библиотека для уменьшения износа памяти
 - Отложенная запись (обновление) по таймеру
 - Работает на базе стандартной EEPROM.h
 - Встроенный механизм ключа первой записи
 
-> Для esp8266 и esp32 гораздо лучше хранить данные в файловой системе, используйте библиотеку [FileData](https://github.com/GyverLibs/FileData) (бинарные данные в файле) или [Pairs](https://github.com/GyverLibs/Pairs) (человеко-читаемые файлы)
+> Для esp8266 и esp32 гораздо лучше хранить данные в файловой системе, используйте библиотеку [Saver](https://github.com/GyverLibs/Saver) (бинарные данные в файле)
 
 ### Совместимость
 Совместима со всеми Arduino платформами (используются Arduino-функции)
